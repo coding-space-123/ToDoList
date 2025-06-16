@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Digital To-Do List</title>
+  <style>
+    :root {
+      --primary: #0ef;
+      --background: #081b29;
+      --text: white;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: var(--background);
+      color: var(--text);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      flex-direction: column;
+    }
+
+    .clock {
+      font-size: 1.1rem;
+      margin-bottom: 5px;
+      text-align: center;
+      color: var(--text);
+    }
+
+    .quote {
+      font-size: 1.1rem;
+      font-style: italic;
+      margin-bottom: 15px;
+      text-align: center;
+      color: #0ef;
+      font-family: 'Georgia', serif;
+      font-weight: bold;
+      text-shadow: 0 0 7px #0ef;
+    }
+
+    @keyframes fadeInQuote {
+      from { opacity: 0.6; }
+      to { opacity: 1; }
+    }
+
+    .todo-container {
+      background: #0a2539;
+      margin-top: 30px;
+      padding: 28px;
+      border-radius: 20px;
+      box-shadow: 0 12px 40px cyan, 0 cyan;
+      width: 90%;
+      max-width: 480px;
+      animation: fadeIn 1s ease-in-out;
+      transition: transform 0.3s;
+    }
+
+    .todo-container:hover {
+      transform: scale(1.02);
+      box-shadow: 1px 1px 20px #012290f7, 1px 1px 40px #0056b3;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      font-weight: 500;
+      font-size: 1.8rem;
+      color: var(--primary);
+      text-shadow: 0 0 10px var(--primary);
+    }
+
+    input[type="text"] {
+      width: 100%;
+      margin-left: -10px;
+      padding: 12px;
+      border-radius: 10px;
+      border: 1px solid #0ef;
+      margin-bottom: 10px;
+      outline: none;
+      font-size: 1rem;
+      background-color: #01121f;
+      color: var(--text);
+      box-shadow: 0 0 10px rgba(0,238,255,0.3);
+      transition: box-shadow 0.3s, transform 0.3s;
+    }
+
+    input[type="text"]:focus {
+      box-shadow: 0 0 10px var(--primary);
+      transform: scale(1.01);
+    }
+
+    .buttons {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    button {
+      flex: 1;
+      padding: 10px;
+      margin-top: 15px;
+      background-color: var(--primary);
+      border: none;
+      color: var(--background);
+      font-weight: bold;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: 0.3s;
+      box-shadow: 0 5px 20px rgba(0,238,255,0.4);
+    }
+
+    button:hover {
+      background-color: white;
+      color: var(--primary);
+      box-shadow: 0 0 20px var(--primary);
+      transform: scale(1.07);
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+      margin-top: 10px;
+    }
+
+    li {
+      background: #0c2a40;
+      padding: 12px 16px;
+      margin-bottom: 12px;
+      border-radius: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 6px 20px rgba(0,238,255,0.25);
+      transition: background 0.3s, transform 0.2s;
+      color: var(--text);
+    }
+
+    li:hover {
+      transform: translateY(-2px);
+      background: #103d5b;
+    }
+
+    li.done {
+      text-decoration: line-through;
+      color: #0ef8;
+      background: #072534;
+    }
+
+    .btns button {
+      background-color: #0ef2;
+      color: white;
+      padding: 6px 10px;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      margin-left: 6px;
+      box-shadow: 0 2px 5px rgba(0,238,255,0.3);
+      transition: background 0.3s;
+    }
+
+    .btns button:hover {
+      background-color: var(--primary);
+      color: var(--background);
+    }
+
+    .progress-container {
+      margin-top: 20px;
+    }
+
+    #progressText {
+      color: #0ef;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
+    #progressBarWrapper {
+      width: 100%;
+      background: #022b3a;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    #progressBar {
+      height: 12px;
+      width: 0%;
+      background: #0ef;
+      transition: width 0.4s;
+    }
+
+    @media (max-width: 500px) {
+      .buttons {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="clock" id="clock"></div>
+  <div class="quote" id="quote"></div>
+  <div class="todo-container">
+    <h2>🌟 My Digital To-Do</h2>
+    <input type="text" id="taskInput" placeholder="What do you want to do?" />
+    <div class="buttons">
+      <button onclick="addTask()">➕ Add Task</button>
+      <button onclick="clearAll()">🔄 Reset</button>
+    </div>
+    <ul id="taskList"></ul>
+
+    <!-- Progress Bar Section -->
+    <div class="progress-container">
+      <div id="progressText">Goal Progress: 0%</div>
+      <div id="progressBarWrapper">
+        <div id="progressBar"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function updateClock() {
+      const now = new Date();
+      const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+      const day = days[now.getDay()];
+      const date = now.toLocaleDateString();
+      const time = now.toLocaleTimeString();
+      document.getElementById("clock").innerText = `${day}, ${date} | ${time}`;
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    const quotes = [
+      "Believe in yourself and all that you are.",
+      "You are capable of amazing things.",
+      "Dream it. Wish it. Do it.",
+      "Push yourself, because no one else is going to do it for you.",
+      "Success is the sum of small efforts repeated daily.",
+      "Don’t wait for opportunity. Create it.",
+      "Every day is a fresh start.",
+      "Stay focused and never give up."
+    ];
+
+    function showRandomQuote() {
+      const quoteBox = document.getElementById("quote");
+      const randomIndex = Math.floor(Math.random() * quotes.length);
+      quoteBox.innerText = quotes[randomIndex];
+    }
+    setInterval(showRandomQuote, 7000);
+    showRandomQuote();
+
+    function updateProgress() {
+      const tasks = document.querySelectorAll('#taskList li');
+      const doneTasks = document.querySelectorAll('#taskList li.done');
+      const percent = tasks.length === 0 ? 0 : Math.round((doneTasks.length / tasks.length) * 100);
+      document.getElementById("progressBar").style.width = percent + "%";
+      document.getElementById("progressText").innerText = `Goal Progress: ${percent}%`;
+    }
+
+    function addTask() {
+      const input = document.getElementById("taskInput");
+      const taskText = input.value.trim();
+      if (taskText === "") return;
+
+      const li = document.createElement("li");
+      li.innerHTML = `
+        <span>${taskText}</span>
+        <div class="btns">
+          <button onclick="toggleDone(this)">✔</button>
+          <button onclick="deleteTask(this)">✖</button>
+        </div>
+      `;
+      document.getElementById("taskList").appendChild(li);
+      input.value = "";
+      updateProgress();
+    }
+
+    function toggleDone(button) {
+      const li = button.parentElement.parentElement;
+      li.classList.toggle("done");
+      updateProgress();
+    }
+
+    function deleteTask(button) {
+      const li = button.parentElement.parentElement;
+      li.remove();
+      updateProgress();
+    }
+
+    function clearAll() {
+      document.getElementById("taskList").innerHTML = "";
+      updateProgress();
+    }
+  </script>
+</body>
+</html>
